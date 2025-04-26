@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FrenzoPay</title>
+<script src="https://cdn.tailwindcss.com/3.4.16"></script>
+<script>tailwind.config={theme:{extend:{colors:{primary:'#5F259F',secondary:'#FF6B2C'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/remixicon/4.6.0/remixicon.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+<style>
+:where([class^="ri-"])::before { content: "\f3c2"; }
+body {
+font-family: 'Inter', sans-serif;
+background-color: #f9fafb;
+}
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+-webkit-appearance: none;
+margin: 0;
+}
+input[type=number] {
+-moz-appearance: textfield;
+}
+.splash-screen {
+position: fixed;
+top: 0;
+left: 0;
+width: 100%;
+height: 100%;
+background-color: #4C1D95;
+display: flex;
+flex-direction: column;
+justify-content: center;
+align-items: center;
+z-index: 9999;
+transition: opacity 0.5s ease-out;
+}
+.fade-out {
+opacity: 0;
+pointer-events: none;
+}
+</style>
+</head>
+<body class="bg-gray-50 h-screen">
+<!-- Splash Screen -->
+<div class="splash-screen" id="splashScreen">
+<div class="bg-white p-4 rounded-lg">
+<img src="https://static.readdy.ai/image/f5b64d3ed3656f34b58a66c19a30066a/d004f03dffdff673ba26fd3d8cb8c799.png" alt="FrenzoPay" class="h-16 mb-2">
+</div>
+<p class="text-white text-sm mt-4">Your Digital Finance Buddy</p>
+</div>
+<!-- Login Screen -->
+<div id="loginScreen" class="hidden min-h-screen px-4 py-12 flex flex-col items-center justify-center">
+<div class="w-full max-w-md">
+<div class="text-center mb-10">
+<img src="https://static.readdy.ai/image/f5b64d3ed3656f34b58a66c19a30066a/d004f03dffdff673ba26fd3d8cb8c799.png" alt="FrenzoPay" class="h-12 mx-auto mb-2">
+<p class="text-gray-600">Your Digital Finance Buddy</p>
+</div>
+<div id="phoneInputSection" class="bg-white rounded-lg shadow-md p-6">
+<h2 class="text-xl font-semibold mb-6 text-gray-800">Login to your account</h2>
+<div class="mb-6">
+<label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+<div class="flex rounded-md shadow-sm border border-gray-300 overflow-hidden">
+<span class="inline-flex items-center px-3 bg-gray-50 text-gray-500 border-r border-gray-300 text-sm">+91</span>
+<input type="number" id="phone" class="flex-1 block w-full px-3 py-2 border-none focus:ring-0 focus:outline-none" placeholder="Enter 10 digit mobile number" maxlength="10">
+</div>
+<p id="phoneError" class="mt-1 text-sm text-red-600 hidden">Please enter a valid 10-digit mobile number</p>
+</div>
+<button id="sendOtpBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Send OTP</span>
+</button>
+</div>
+<div id="otpInputSection" class="bg-white rounded-lg shadow-md p-6 hidden">
+<h2 class="text-xl font-semibold mb-2 text-gray-800">Verify OTP</h2>
+<p class="text-gray-500 text-sm mb-6">We've sent a verification code to +91 <span id="displayPhone"></span></p>
+<div class="mb-6">
+<label for="otp" class="block text-sm font-medium text-gray-700 mb-1">Enter OTP</label>
+<div class="flex gap-2 justify-between">
+<input type="number" id="otp1" class="w-10 h-12 text-center border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" maxlength="1">
+<input type="number" id="otp2" class="w-10 h-12 text-center border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" maxlength="1">
+<input type="number" id="otp3" class="w-10 h-12 text-center border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" maxlength="1">
+<input type="number" id="otp4" class="w-10 h-12 text-center border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" maxlength="1">
+<input type="number" id="otp5" class="w-10 h-12 text-center border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" maxlength="1">
+<input type="number" id="otp6" class="w-10 h-12 text-center border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" maxlength="1">
+</div>
+<p id="otpError" class="mt-1 text-sm text-red-600 hidden">Please enter a valid 6-digit OTP</p>
+</div>
+<div class="flex justify-between items-center mb-6">
+<button id="resendOtpBtn" class="text-primary text-sm font-medium cursor-pointer">Resend OTP</button>
+<p class="text-gray-500 text-sm">OTP valid for <span id="otpTimer">02:00</span></p>
+</div>
+<button id="verifyOtpBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Verify OTP</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Dashboard Screen -->
+<div id="dashboardScreen" class="hidden pb-20">
+<!-- Top Navigation Bar -->
+<div class="bg-white fixed top-0 left-0 w-full z-10 shadow-[0_2px_8px_rgba(0,0,0,0.08)]">
+<div class="px-4 py-3 flex justify-between items-center">
+<div class="flex items-center">
+<img src="https://static.readdy.ai/image/f5b64d3ed3656f34b58a66c19a30066a/d004f03dffdff673ba26fd3d8cb8c799.png" alt="FrenzoPay" class="h-8">
+</div>
+<div class="flex items-center space-x-3">
+<div class="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full cursor-pointer">
+<i class="ri-notification-3-line text-primary ri-lg"></i>
+</div>
+<div class="w-8 h-8 flex items-center justify-center bg-primary/10 rounded-full cursor-pointer">
+<i class="ri-user-line text-primary ri-lg"></i>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content -->
+<div class="pt-16 px-4">
+<!-- Balance Card -->
+<div class="bg-gradient-to-r from-primary via-[#4C1D95] to-secondary rounded-lg shadow-md p-4 mb-6 text-white">
+<div class="flex justify-between items-center mb-2">
+<p class="text-sm opacity-80">Available Balance</p>
+<div class="w-8 h-8 flex items-center justify-center bg-white/20 rounded-full cursor-pointer">
+<i class="ri-eye-line text-white ri-lg"></i>
+</div>
+</div>
+<h2 class="text-2xl font-bold mb-2">₹ 12,458.75</h2>
+<div class="flex justify-between">
+<button class="bg-white/20 py-1 px-3 !rounded-button text-sm flex items-center gap-1 cursor-pointer">
+<i class="ri-add-line ri-sm"></i> Add Money
+</button>
+<button class="bg-white/20 py-1 px-3 !rounded-button text-sm flex items-center gap-1 cursor-pointer">
+<i class="ri-history-line ri-sm"></i> History
+</button>
+</div>
+</div>
+<!-- Quick Actions -->
+<div class="mb-6">
+<h3 class="text-lg font-semibold mb-3 text-gray-800">Quick Actions</h3>
+<div class="grid grid-cols-4 gap-2">
+<div class="flex flex-col items-center cursor-pointer" id="scanQrBtn">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary/10 rounded-full mb-1">
+<i class="ri-qr-scan-line text-secondary ri-lg"></i>
+</div>
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Scan QR</p>
+</div>
+<div class="flex flex-col items-center cursor-pointer" id="sendMoneyBtn">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary/10 rounded-full mb-1">
+<i class="ri-send-plane-line text-secondary ri-lg"></i>
+</div>
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Send Money</p>
+</div>
+<div class="flex flex-col items-center cursor-pointer" id="rechargeBtn">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary/10 rounded-full mb-1">
+<i class="ri-smartphone-line text-secondary ri-lg"></i>
+</div>
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Recharge</p>
+</div>
+<div class="flex flex-col items-center cursor-pointer" id="payBillsBtn">
+<div class="w-12 h-12 flex items-center justify-center bg-secondary/10 rounded-full mb-1">
+<i class="ri-bill-line text-secondary ri-lg"></i>
+</div>
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Pay Bills</p>
+</div>
+</div>
+</div>
+<!-- Services Highlights -->
+<div class="mb-6">
+<h3 class="text-lg font-semibold mb-3 text-gray-800">Services</h3>
+<div class="grid grid-cols-3 gap-3">
+<div class="bg-gradient-to-br from-white to-secondary/5 rounded-lg shadow-sm p-3 flex flex-col items-center cursor-pointer hover:shadow-md transition-shadow duration-200" id="mobileRechargeBtn">
+<img src="https://readdy.ai/api/search-image?query=icon%2C%203D%20cartoon%2C%20mobile%20phone%20with%20signal%20waves%2C%20the%20icon%20should%20take%20up%2070%25%20of%20the%20frame%2C%20vibrant%20colors%20with%20soft%20gradients%2C%20minimalist%20design%2C%20smooth%20rounded%20shapes%2C%20subtle%20shading%2C%20no%20outlines%2C%20centered%20composition%2C%20isolated%20on%20white%20background%2C%20playful%20and%20friendly%20aesthetic%2C%20isometric%20perspective%2C%20high%20detail%20quality%2C%20clean%20and%20modern%20look%2C%20single%20object%20focus&width=64&height=64&seq=1&orientation=squarish" alt="Mobile Recharge" class="w-12 h-12 mb-2 object-cover">
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Mobile Recharge</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-3 flex flex-col items-center cursor-pointer" id="dthBtn">
+<img src="https://readdy.ai/api/search-image?query=icon%2C%203D%20cartoon%2C%20satellite%20dish%20or%20TV%20antenna%2C%20the%20icon%20should%20take%20up%2070%25%20of%20the%20frame%2C%20vibrant%20colors%20with%20soft%20gradients%2C%20minimalist%20design%2C%20smooth%20rounded%20shapes%2C%20subtle%20shading%2C%20no%20outlines%2C%20centered%20composition%2C%20isolated%20on%20white%20background%2C%20playful%20and%20friendly%20aesthetic%2C%20isometric%20perspective%2C%20high%20detail%20quality%2C%20clean%20and%20modern%20look%2C%20single%20object%20focus&width=64&height=64&seq=2&orientation=squarish" alt="DTH" class="w-12 h-12 mb-2 object-cover">
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">DTH</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-3 flex flex-col items-center cursor-pointer" id="electricityBtn">
+<img src="https://readdy.ai/api/search-image?query=icon%2C%203D%20cartoon%2C%20electric%20lightbulb%20or%20electricity%20symbol%2C%20the%20icon%20should%20take%20up%2070%25%20of%20the%20frame%2C%20vibrant%20colors%20with%20soft%20gradients%2C%20minimalist%20design%2C%20smooth%20rounded%20shapes%2C%20subtle%20shading%2C%20no%20outlines%2C%20centered%20composition%2C%20isolated%20on%20white%20background%2C%20playful%20and%20friendly%20aesthetic%2C%20isometric%20perspective%2C%20high%20detail%20quality%2C%20clean%20and%20modern%20look%2C%20single%20object%20focus&width=64&height=64&seq=3&orientation=squarish" alt="Electricity" class="w-12 h-12 mb-2 object-cover">
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Electricity</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-3 flex flex-col items-center cursor-pointer" id="aepsBtn">
+<img src="https://readdy.ai/api/search-image?query=icon%2C%203D%20cartoon%2C%20fingerprint%20scan%20or%20biometric%20authentication%2C%20the%20icon%20should%20take%20up%2070%25%20of%20the%20frame%2C%20vibrant%20colors%20with%20soft%20gradients%2C%20minimalist%20design%2C%20smooth%20rounded%20shapes%2C%20subtle%20shading%2C%20no%20outlines%2C%20centered%20composition%2C%20isolated%20on%20white%20background%2C%20playful%20and%20friendly%20aesthetic%2C%20isometric%20perspective%2C%20high%20detail%20quality%2C%20clean%20and%20modern%20look%2C%20single%20object%20focus&width=64&height=64&seq=4&orientation=squarish" alt="AEPS" class="w-12 h-12 mb-2 object-cover">
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">AEPS</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-3 flex flex-col items-center cursor-pointer" id="getLoanBtn">
+<img src="https://readdy.ai/api/search-image?query=icon%2C%203D%20cartoon%2C%20money%20bag%20with%20rupee%20symbol%20or%20loan%20document%2C%20the%20icon%20should%20take%20up%2070%25%20of%20the%20frame%2C%20vibrant%20colors%20with%20soft%20gradients%2C%20minimalist%20design%2C%20smooth%20rounded%20shapes%2C%20subtle%20shading%2C%20no%20outlines%2C%20centered%20composition%2C%20isolated%20on%20white%20background%2C%20playful%20and%20friendly%20aesthetic%2C%20isometric%20perspective%2C%20high%20detail%20quality%2C%20clean%20and%20modern%20look%2C%20single%20object%20focus&width=64&height=64&seq=5&orientation=squarish" alt="Get Loan" class="w-12 h-12 mb-2 object-cover">
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Get Loan</p>
+</div>
+<div class="bg-white rounded-lg shadow-sm p-3 flex flex-col items-center cursor-pointer">
+<img src="https://readdy.ai/api/search-image?query=icon%2C%203D%20cartoon%2C%20insurance%20shield%20or%20protection%20symbol%2C%20the%20icon%20should%20take%20up%2070%25%20of%20the%20frame%2C%20vibrant%20colors%20with%20soft%20gradients%2C%20minimalist%20design%2C%20smooth%20rounded%20shapes%2C%20subtle%20shading%2C%20no%20outlines%2C%20centered%20composition%2C%20isolated%20on%20white%20background%2C%20playful%20and%20friendly%20aesthetic%2C%20isometric%20perspective%2C%20high%20detail%20quality%2C%20clean%20and%20modern%20look%2C%20single%20object%20focus&width=64&height=64&seq=6&orientation=squarish" alt="Insurance" class="w-12 h-12 mb-2 object-cover">
+<p class="text-xs text-center text-gray-700 whitespace-nowrap overflow-hidden text-overflow-ellipsis">Insurance</p>
+</div>
+</div>
+</div>
+<!-- Recent Transactions -->
+<div class="mb-6">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-lg font-semibold text-gray-800">Recent Transactions</h3>
+<a href="#" class="text-primary text-sm">View All</a>
+</div>
+<div class="bg-white rounded-lg shadow-sm divide-y">
+<div class="p-3 flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-10 h-10 flex items-center justify-center bg-green-100 rounded-full mr-3">
+<i class="ri-arrow-down-line text-green-600 ri-lg"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Received from Rahul Sharma</p>
+<p class="text-xs text-gray-500">26 Apr, 10:45 AM</p>
+</div>
+</div>
+<p class="text-green-600 font-medium">+₹2,500</p>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-10 h-10 flex items-center justify-center bg-red-100 rounded-full mr-3">
+<i class="ri-arrow-up-line text-red-600 ri-lg"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Paid to Swiggy</p>
+<p class="text-xs text-gray-500">25 Apr, 08:30 PM</p>
+</div>
+</div>
+<p class="text-red-600 font-medium">-₹450</p>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-10 h-10 flex items-center justify-center bg-blue-100 rounded-full mr-3">
+<i class="ri-smartphone-line text-blue-600 ri-lg"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Mobile Recharge - Jio</p>
+<p class="text-xs text-gray-500">24 Apr, 02:15 PM</p>
+</div>
+</div>
+<p class="text-red-600 font-medium">-₹299</p>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-10 h-10 flex items-center justify-center bg-purple-100 rounded-full mr-3">
+<i class="ri-bank-line text-purple-600 ri-lg"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">AEPS Withdrawal</p>
+<p class="text-xs text-gray-500">23 Apr, 11:20 AM</p>
+</div>
+</div>
+<p class="text-green-600 font-medium">+₹5,000</p>
+</div>
+<div class="p-3 flex items-center justify-between">
+<div class="flex items-center">
+<div class="w-10 h-10 flex items-center justify-center bg-yellow-100 rounded-full mr-3">
+<i class="ri-lightbulb-line text-yellow-600 ri-lg"></i>
+</div>
+<div>
+<p class="text-sm font-medium text-gray-800">Electricity Bill - BSES</p>
+<p class="text-xs text-gray-500">22 Apr, 09:45 AM</p>
+</div>
+</div>
+<p class="text-red-600 font-medium">-₹1,250</p>
+</div>
+</div>
+</div>
+<!-- Offers Banner -->
+<div class="mb-6">
+<div class="bg-white rounded-lg shadow-sm overflow-hidden">
+<img src="https://readdy.ai/api/search-image?query=promotional%20banner%20for%20fintech%20app%20showing%20special%20offers%2C%20cashback%20rewards%2C%20and%20discounts%20on%20bill%20payments%2C%20vibrant%20colors%2C%20modern%20design%2C%20clean%20layout%20with%20clear%20text%2C%20featuring%20payment%20icons%20and%20wallet%20graphics%2C%20professional%20digital%20marketing%20style%2C%20high%20quality%20detailed%20image&width=343&height=150&seq=7&orientation=landscape" alt="Special Offers" class="w-full h-auto object-cover">
+</div>
+</div>
+</div>
+<!-- Electricity Bill Modal -->
+<div id="electricityBillModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">Electricity Bill Payment</h3>
+<button class="text-white" id="closeElectricityBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-1">Select Provider</label>
+<div class="relative">
+<select id="electricityProvider" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary appearance-none">
+<option value="" disabled selected>Select your electricity provider</option>
+<option value="bses">BSES Rajdhani</option>
+<option value="tata">Tata Power</option>
+<option value="adani">Adani Electricity</option>
+<option value="reliance">Reliance Energy</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="consumerNumber" class="block text-sm font-medium text-gray-700 mb-1">Consumer Number</label>
+<input type="text" id="consumerNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter consumer number">
+</div>
+<button id="fetchBillBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Fetch Bill</span>
+</button>
+<div id="billDetails" class="hidden mt-4">
+<div class="bg-gray-50 rounded-lg p-4">
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Consumer Name</span>
+<span class="text-sm font-medium">Aditya Sharma</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Bill Period</span>
+<span class="text-sm font-medium">Mar 2025 - Apr 2025</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Due Date</span>
+<span class="text-sm font-medium">30 Apr 2025</span>
+</div>
+<div class="flex justify-between pt-2 border-t border-gray-200">
+<span class="text-sm font-medium">Bill Amount</span>
+<span class="text-sm font-medium text-primary">₹2,450</span>
+</div>
+</div>
+<button id="payBillBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer mt-4">
+<span>Pay Bill</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- DTH Recharge Modal -->
+<div id="dthModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">DTH Recharge</h3>
+<button class="text-white" id="closeDthBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-1">Select Operator</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary dth-operator">
+<img src="https://readdy.ai/api/search-image?query=Tata%20Play%20DTH%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=12&orientation=squarish" alt="Tata Play" class="w-8 h-8 mr-2">
+<span class="text-sm">Tata Play</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary dth-operator">
+<img src="https://readdy.ai/api/search-image?query=Airtel%20DTH%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=13&orientation=squarish" alt="Airtel" class="w-8 h-8 mr-2">
+<span class="text-sm">Airtel</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary dth-operator">
+<img src="https://readdy.ai/api/search-image?query=Dish%20TV%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=14&orientation=squarish" alt="Dish TV" class="w-8 h-8 mr-2">
+<span class="text-sm">Dish TV</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary dth-operator">
+<img src="https://readdy.ai/api/search-image?query=Sun%20Direct%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=15&orientation=squarish" alt="Sun Direct" class="w-8 h-8 mr-2">
+<span class="text-sm">Sun Direct</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="subscriberId" class="block text-sm font-medium text-gray-700 mb-1">Subscriber ID / VC Number</label>
+<input type="text" id="subscriberId" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter subscriber ID">
+</div>
+<button id="fetchDthPlansBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>View Plans</span>
+</button>
+<div id="dthPlans" class="hidden mt-4">
+<label class="block text-sm font-medium text-gray-700 mb-2">Select Plan</label>
+<div class="space-y-3">
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary dth-plan">
+<div class="flex justify-between">
+<span class="font-medium">₹299</span>
+<span class="text-sm text-gray-500">1 Month</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">All Hindi + English News Channels</p>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary dth-plan">
+<div class="flex justify-between">
+<span class="font-medium">₹499</span>
+<span class="text-sm text-gray-500">1 Month</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">All Hindi + English Entertainment</p>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary dth-plan">
+<div class="flex justify-between">
+<span class="font-medium">₹799</span>
+<span class="text-sm text-gray-500">1 Month</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">All Channels + HD Pack</p>
+</div>
+</div>
+<button id="rechargeDthBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer mt-4">
+<span>Recharge Now</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Navigation -->
+<div class="fixed bottom-0 left-0 w-full bg-white shadow-lg border-t border-gray-200 z-10">
+<div class="grid grid-cols-5 h-16">
+<div class="flex flex-col items-center justify-center cursor-pointer text-primary">
+<i class="ri-home-5-fill ri-lg"></i>
+<span class="text-xs mt-1">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center cursor-pointer text-gray-500">
+<i class="ri-exchange-dollar-line ri-lg"></i>
+<span class="text-xs mt-1">Payments</span>
+</div>
+<div class="flex flex-col items-center justify-center cursor-pointer">
+<div class="w-12 h-12 flex items-center justify-center bg-primary rounded-full -mt-5">
+<i class="ri-qr-scan-2-line text-white ri-lg"></i>
+</div>
+</div>
+<div class="flex flex-col items-center justify-center cursor-pointer text-gray-500">
+<i class="ri-history-line ri-lg"></i>
+<span class="text-xs mt-1">History</span>
+</div>
+<div class="flex flex-col items-center justify-center cursor-pointer text-gray-500">
+<i class="ri-user-3-line ri-lg"></i>
+<span class="text-xs mt-1">Profile</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Mobile Recharge Modal -->
+<div id="mobileRechargeModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">Mobile Recharge</h3>
+<button class="text-white" id="closeMobileRechargeBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-1">Mobile Operator</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary operator-option">
+<img src="https://readdy.ai/api/search-image?query=Jio%20telecom%20company%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=8&orientation=squarish" alt="Jio" class="w-8 h-8 mr-2">
+<span class="text-sm">Jio</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary operator-option">
+<img src="https://readdy.ai/api/search-image?query=Airtel%20telecom%20company%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=9&orientation=squarish" alt="Airtel" class="w-8 h-8 mr-2">
+<span class="text-sm">Airtel</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary operator-option">
+<img src="https://readdy.ai/api/search-image?query=Vi%20%28Vodafone%20Idea%29%20telecom%20company%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=10&orientation=squarish" alt="Vi" class="w-8 h-8 mr-2">
+<span class="text-sm">Vi</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer hover:border-primary operator-option">
+<img src="https://readdy.ai/api/search-image?query=BSNL%20telecom%20company%20logo%2C%20simple%2C%20clean%2C%20isolated%20on%20white%20background%2C%20centered%20composition%2C%20professional%20corporate%20branding&width=40&height=40&seq=11&orientation=squarish" alt="BSNL" class="w-8 h-8 mr-2">
+<span class="text-sm">BSNL</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="mobileNumber" class="block text-sm font-medium text-gray-700 mb-1">Mobile Number</label>
+<input type="number" id="mobileNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter 10 digit mobile number">
+</div>
+<div id="rechargePlans" class="hidden mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-2">Select Recharge Plan</label>
+<div class="space-y-3">
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary plan-option">
+<div class="flex justify-between">
+<span class="font-medium">₹149</span>
+<span class="text-sm text-gray-500">Validity: 28 days</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">Unlimited calls + 2GB/day + 100 SMS/day</p>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary plan-option">
+<div class="flex justify-between">
+<span class="font-medium">₹249</span>
+<span class="text-sm text-gray-500">Validity: 28 days</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">Unlimited calls + 1.5GB/day + 100 SMS/day</p>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary plan-option">
+<div class="flex justify-between">
+<span class="font-medium">₹299</span>
+<span class="text-sm text-gray-500">Validity: 28 days</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">Unlimited calls + 2.5GB/day + 100 SMS/day</p>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary plan-option">
+<div class="flex justify-between">
+<span class="font-medium">₹399</span>
+<span class="text-sm text-gray-500">Validity: 56 days</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">Unlimited calls + 2GB/day + 100 SMS/day</p>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-primary plan-option">
+<div class="flex justify-between">
+<span class="font-medium">₹599</span>
+<span class="text-sm text-gray-500">Validity: 84 days</span>
+</div>
+<p class="text-sm text-gray-600 mt-1">Unlimited calls + 2GB/day + 100 SMS/day</p>
+</div>
+</div>
+</div>
+<div id="rechargeConfirm" class="hidden">
+<div class="bg-gray-50 rounded-lg p-4 mb-4">
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Mobile Number</span>
+<span class="text-sm font-medium" id="confirmMobileNumber">9876543210</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Operator</span>
+<span class="text-sm font-medium" id="confirmOperator">Jio</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Plan</span>
+<span class="text-sm font-medium" id="confirmPlan">₹299</span>
+</div>
+<div class="flex justify-between pt-2 border-t border-gray-200">
+<span class="text-sm font-medium">Amount to Pay</span>
+<span class="text-sm font-medium text-primary" id="confirmAmount">₹299</span>
+</div>
+</div>
+</div>
+<button id="proceedRechargeBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Proceed</span>
+</button>
+<button id="confirmRechargeBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer hidden">
+<span>Confirm & Pay</span>
+</button>
+</div>
+</div>
+</div>
+<!-- AEPS Modal -->
+<div id="aepsModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">AEPS Services</h3>
+<button class="text-white" id="closeAepsBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-1">Service Type</label>
+<div class="grid grid-cols-2 gap-3">
+<div class="border border-primary bg-primary/5 rounded-lg p-3 flex items-center cursor-pointer service-option">
+<div class="w-8 h-8 flex items-center justify-center bg-primary/20 rounded-full mr-2">
+<i class="ri-bank-card-line text-primary"></i>
+</div>
+<span class="text-sm">Cash Withdrawal</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer service-option">
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full mr-2">
+<i class="ri-file-list-3-line text-gray-600"></i>
+</div>
+<span class="text-sm">Mini Statement</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer service-option">
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full mr-2">
+<i class="ri-search-line text-gray-600"></i>
+</div>
+<span class="text-sm">Balance Enquiry</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-3 flex items-center cursor-pointer service-option">
+<div class="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-full mr-2">
+<i class="ri-secure-payment-line text-gray-600"></i>
+</div>
+<span class="text-sm">Aadhaar Pay</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="aadhaarNumber" class="block text-sm font-medium text-gray-700 mb-1">Aadhaar Number</label>
+<input type="number" id="aadhaarNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter 12 digit Aadhaar number">
+</div>
+<div class="mb-4">
+<label for="bankSelect" class="block text-sm font-medium text-gray-700 mb-1">Select Bank</label>
+<div class="relative">
+<select id="bankSelect" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary appearance-none">
+<option value="" disabled selected>Select your bank</option>
+<option value="sbi">State Bank of India</option>
+<option value="hdfc">HDFC Bank</option>
+<option value="icici">ICICI Bank</option>
+<option value="axis">Axis Bank</option>
+<option value="pnb">Punjab National Bank</option>
+<option value="bob">Bank of Baroda</option>
+<option value="canara">Canara Bank</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="aepsAmount" class="block text-sm font-medium text-gray-700 mb-1">Amount (₹)</label>
+<input type="number" id="aepsAmount" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter amount">
+</div>
+<div id="fingerprintSection" class="mb-4 text-center">
+<p class="text-sm text-gray-600 mb-3">Place your finger on the scanner to authenticate</p>
+<div class="w-24 h-24 mx-auto mb-3 border-2 border-primary rounded-lg flex items-center justify-center">
+<i class="ri-fingerprint-line text-primary ri-3x"></i>
+</div>
+<button id="scanFingerprintBtn" class="bg-primary/10 text-primary py-2 px-4 !rounded-button text-sm cursor-pointer">
+Start Scan
+</button>
+</div>
+<button id="proceedAepsBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Proceed</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Loan Modal -->
+<div id="loanModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">Loan Services</h3>
+<button class="text-white" id="closeLoanBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="mb-6">
+<h4 class="text-lg font-medium text-gray-800 mb-3">Pre-approved Offers</h4>
+<div class="bg-gradient-to-r from-primary/10 to-secondary/10 rounded-lg p-4 border border-primary/20">
+<div class="flex justify-between items-center mb-2">
+<h5 class="font-medium">Personal Loan</h5>
+<span class="text-xs bg-green-100 text-green-800 py-1 px-2 rounded-full">Pre-approved</span>
+</div>
+<div class="grid grid-cols-3 gap-2 mb-3">
+<div class="bg-white rounded p-2 text-center">
+<p class="text-xs text-gray-500">Amount</p>
+<p class="font-medium">₹2,00,000</p>
+</div>
+<div class="bg-white rounded p-2 text-center">
+<p class="text-xs text-gray-500">Interest</p>
+<p class="font-medium">10.5% p.a.</p>
+</div>
+<div class="bg-white rounded p-2 text-center">
+<p class="text-xs text-gray-500">Tenure</p>
+<p class="font-medium">36 Months</p>
+</div>
+</div>
+<button class="w-full bg-primary text-white py-2 !rounded-button text-sm cursor-pointer">
+Apply Now
+</button>
+</div>
+</div>
+<div class="mb-4">
+<h4 class="text-lg font-medium text-gray-800 mb-3">Apply for New Loan</h4>
+<div class="mb-4">
+<label for="loanType" class="block text-sm font-medium text-gray-700 mb-1">Loan Type</label>
+<div class="relative">
+<select id="loanType" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary appearance-none">
+<option value="personal">Personal Loan</option>
+<option value="business">Business Loan</option>
+<option value="home">Home Loan</option>
+<option value="education">Education Loan</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="panNumber" class="block text-sm font-medium text-gray-700 mb-1">PAN Number</label>
+<input type="text" id="panNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter PAN number">
+</div>
+<div class="mb-4">
+<label for="loanAmount" class="block text-sm font-medium text-gray-700 mb-1">Loan Amount</label>
+<div class="relative">
+<input type="number" id="loanAmount" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter loan amount" value="100000">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500">₹</span>
+</div>
+</div>
+<div class="mt-2">
+<input type="range" id="loanAmountSlider" min="10000" max="1000000" step="10000" value="100000" class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer">
+<div class="flex justify-between text-xs text-gray-500 mt-1">
+<span>₹10,000</span>
+<span>₹10,00,000</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="occupation" class="block text-sm font-medium text-gray-700 mb-1">Occupation</label>
+<div class="relative">
+<select id="occupation" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary appearance-none">
+<option value="salaried">Salaried</option>
+<option value="self-employed">Self Employed</option>
+<option value="business">Business Owner</option>
+<option value="professional">Professional</option>
+<option value="other">Other</option>
+</select>
+<div class="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+<i class="ri-arrow-down-s-line text-gray-400"></i>
+</div>
+</div>
+</div>
+</div>
+<button id="applyLoanBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Check Eligibility</span>
+</button>
+</div>
+</div>
+</div>
+<!-- QR Scanner Modal -->
+<div id="qrScannerModal" class="fixed inset-0 bg-black bg-opacity-90 z-50 flex flex-col hidden">
+<div class="bg-black p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">Scan QR Code</h3>
+<button class="text-white" id="closeQrScannerBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center p-4">
+<div class="relative w-64 h-64 mb-6">
+<div class="absolute inset-0 border-2 border-white/30 rounded-lg overflow-hidden">
+<div class="absolute inset-0 bg-gradient-to-b from-black/20 to-black/20"></div>
+</div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="w-48 h-48 border-2 border-primary rounded-lg relative">
+<div class="absolute top-0 left-0 w-4 h-4 border-t-2 border-l-2 border-primary -translate-x-1 -translate-y-1"></div>
+<div class="absolute top-0 right-0 w-4 h-4 border-t-2 border-r-2 border-primary translate-x-1 -translate-y-1"></div>
+<div class="absolute bottom-0 left-0 w-4 h-4 border-b-2 border-l-2 border-primary -translate-x-1 translate-y-1"></div>
+<div class="absolute bottom-0 right-0 w-4 h-4 border-b-2 border-r-2 border-primary translate-x-1 translate-y-1"></div>
+</div>
+</div>
+<div class="absolute inset-x-0 top-1/2 h-0.5 bg-primary/70 animate-pulse"></div>
+</div>
+<p class="text-white text-center mb-6">Position the QR code within the frame to scan</p>
+<div class="flex gap-4">
+<button class="bg-white/20 text-white py-2 px-4 !rounded-button flex items-center gap-2 cursor-pointer">
+<i class="ri-image-line"></i>
+<span>Upload QR</span>
+</button>
+<button class="bg-white/20 text-white py-2 px-4 !rounded-button flex items-center gap-2 cursor-pointer" id="enterUpiIdBtn">
+<i class="ri-edit-line"></i>
+<span>Enter UPI ID</span>
+</button>
+</div>
+</div>
+</div>
+<!-- UPI Payment Modal -->
+<div id="upiPaymentModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">UPI Payment</h3>
+<button class="text-white" id="closeUpiPaymentBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="flex flex-col items-center mb-6">
+<div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-2">
+<i class="ri-user-3-fill text-gray-600 ri-2x"></i>
+</div>
+<h4 class="font-medium" id="upiPayeeName">Merchant Name</h4>
+<p class="text-sm text-gray-500" id="upiPayeeId">merchant@upi</p>
+</div>
+<div class="mb-6">
+<label for="upiAmount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+<div class="relative">
+<input type="number" id="upiAmount" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary text-xl font-medium" placeholder="0">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500 text-xl">₹</span>
+</div>
+</div>
+</div>
+<div class="mb-6">
+<label for="upiNote" class="block text-sm font-medium text-gray-700 mb-1">Note (Optional)</label>
+<input type="text" id="upiNote" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Add a note">
+</div>
+<div class="mb-6">
+<p class="text-sm text-gray-600 mb-2">Pay using</p>
+<div class="grid grid-cols-4 gap-3">
+<div class="border border-primary bg-primary/5 rounded-lg p-2 flex flex-col items-center cursor-pointer">
+<div class="w-8 h-8 flex items-center justify-center mb-1">
+<i class="ri-bank-card-line text-primary ri-lg"></i>
+</div>
+<span class="text-xs text-center">SBI</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-2 flex flex-col items-center cursor-pointer">
+<div class="w-8 h-8 flex items-center justify-center mb-1">
+<i class="ri-bank-card-line text-gray-600 ri-lg"></i>
+</div>
+<span class="text-xs text-center">HDFC</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-2 flex flex-col items-center cursor-pointer">
+<div class="w-8 h-8 flex items-center justify-center mb-1">
+<i class="ri-bank-card-line text-gray-600 ri-lg"></i>
+</div>
+<span class="text-xs text-center">ICICI</span>
+</div>
+<div class="border border-gray-200 rounded-lg p-2 flex flex-col items-center cursor-pointer">
+<div class="w-8 h-8 flex items-center justify-center mb-1">
+<i class="ri-add-line text-gray-600 ri-lg"></i>
+</div>
+<span class="text-xs text-center">More</span>
+</div>
+</div>
+</div>
+<button id="payUpiBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Pay Now</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Transaction Success Modal -->
+<div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="p-6 text-center">
+<div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-check-line text-green-600 ri-2x"></i>
+</div>
+<h3 class="text-xl font-medium text-gray-800 mb-2" id="successTitle">Transaction Successful!</h3>
+<p class="text-gray-600 mb-6" id="successMessage">Your payment has been processed successfully.</p>
+<div class="bg-gray-50 rounded-lg p-4 mb-6">
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Amount</span>
+<span class="text-sm font-medium" id="successAmount">₹500</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Date & Time</span>
+<span class="text-sm font-medium" id="successDateTime">26 Apr 2025, 10:45 AM</span>
+</div>
+<div class="flex justify-between mb-2">
+<span class="text-sm text-gray-600">Transaction ID</span>
+<span class="text-sm font-medium" id="successTxnId">FP2504251045123</span>
+</div>
+<div class="flex justify-between mb-2" id="successUtrContainer">
+<span class="text-sm text-gray-600">UTR Number</span>
+<span class="text-sm font-medium" id="successUtr">123456789012</span>
+</div>
+</div>
+<div class="flex gap-3">
+<button class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 !rounded-button flex items-center justify-center gap-2 cursor-pointer">
+<i class="ri-download-line"></i>
+<span>Download</span>
+</button>
+<button class="flex-1 border border-gray-300 text-gray-700 py-2 px-4 !rounded-button flex items-center justify-center gap-2 cursor-pointer">
+<i class="ri-share-line"></i>
+<span>Share</span>
+</button>
+</div>
+<button id="closeSuccessBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer mt-4">
+<span>Done</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Send Money Modal -->
+<div id="sendMoneyModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+<div class="bg-white rounded-lg w-full max-w-md mx-4 overflow-hidden">
+<div class="bg-primary p-4 flex justify-between items-center">
+<h3 class="text-white font-medium">Send Money</h3>
+<button class="text-white" id="closeSendMoneyBtn">
+<i class="ri-close-line ri-lg"></i>
+</button>
+</div>
+<div class="p-4">
+<div class="mb-4">
+<label class="block text-sm font-medium text-gray-700 mb-1">Transfer Method</label>
+<div class="flex bg-gray-100 rounded-full p-1 mb-4">
+<button class="flex-1 py-2 px-4 rounded-full bg-primary text-white text-sm font-medium" id="upiTransferBtn">UPI Transfer</button>
+<button class="flex-1 py-2 px-4 rounded-full text-gray-700 text-sm font-medium" id="bankTransferBtn">Bank Transfer</button>
+</div>
+</div>
+<div id="upiTransferSection">
+<div class="mb-4">
+<label for="upiId" class="block text-sm font-medium text-gray-700 mb-1">UPI ID / Mobile Number</label>
+<input type="text" id="upiId" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter UPI ID or mobile number">
+</div>
+</div>
+<div id="bankTransferSection" class="hidden">
+<div class="mb-4">
+<label for="accountNumber" class="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+<input type="text" id="accountNumber" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter account number">
+</div>
+<div class="mb-4">
+<label for="ifscCode" class="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+<input type="text" id="ifscCode" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter IFSC code">
+</div>
+<div class="mb-4">
+<label for="accountHolderName" class="block text-sm font-medium text-gray-700 mb-1">Account Holder Name</label>
+<input type="text" id="accountHolderName" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter account holder name">
+</div>
+</div>
+<div class="mb-4">
+<label for="transferAmount" class="block text-sm font-medium text-gray-700 mb-1">Amount</label>
+<div class="relative">
+<input type="number" id="transferAmount" class="w-full pl-8 pr-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Enter amount">
+<div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+<span class="text-gray-500">₹</span>
+</div>
+</div>
+</div>
+<div class="mb-4">
+<label for="transferNote" class="block text-sm font-medium text-gray-700 mb-1">Note (Optional)</label>
+<input type="text" id="transferNote" class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary focus:border-primary" placeholder="Add a note">
+</div>
+<button id="sendMoneyProceedBtn" class="w-full bg-primary text-white py-2 px-4 !rounded-button flex items-center justify-center cursor-pointer">
+<span>Proceed</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+// Electricity Bill Modal
+const electricityBtn = document.getElementById('electricityBtn');
+const electricityBillModal = document.getElementById('electricityBillModal');
+const closeElectricityBtn = document.getElementById('closeElectricityBtn');
+const fetchBillBtn = document.getElementById('fetchBillBtn');
+const billDetails = document.getElementById('billDetails');
+const payBillBtn = document.getElementById('payBillBtn');
+electricityBtn.addEventListener('click', function() {
+electricityBillModal.classList.remove('hidden');
+});
+closeElectricityBtn.addEventListener('click', function() {
+electricityBillModal.classList.add('hidden');
+billDetails.classList.add('hidden');
+});
+fetchBillBtn.addEventListener('click', function() {
+const provider = document.getElementById('electricityProvider').value;
+const consumerNumber = document.getElementById('consumerNumber').value;
+if (provider && consumerNumber) {
+fetchBillBtn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div><span>Fetching...</span>';
+setTimeout(() => {
+billDetails.classList.remove('hidden');
+fetchBillBtn.innerHTML = '<span>Fetch Bill</span>';
+}, 1500);
+}
+});
+payBillBtn.addEventListener('click', async function() {
+electricityBillModal.classList.add('hidden');
+await processPayment(2450, 'Electricity Bill');
+});
+// DTH Modal
+const dthBtn = document.getElementById('dthBtn');
+const dthModal = document.getElementById('dthModal');
+const closeDthBtn = document.getElementById('closeDthBtn');
+const fetchDthPlansBtn = document.getElementById('fetchDthPlansBtn');
+const dthPlans = document.getElementById('dthPlans');
+const rechargeDthBtn = document.getElementById('rechargeDthBtn');
+const dthOperators = document.querySelectorAll('.dth-operator');
+const dthPlanOptions = document.querySelectorAll('.dth-plan');
+let selectedDthOperator = '';
+let selectedDthPlan = '';
+dthBtn.addEventListener('click', function() {
+dthModal.classList.remove('hidden');
+});
+closeDthBtn.addEventListener('click', function() {
+dthModal.classList.add('hidden');
+dthPlans.classList.add('hidden');
+dthOperators.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+selectedDthOperator = '';
+selectedDthPlan = '';
+});
+dthOperators.forEach(operator => {
+operator.addEventListener('click', function() {
+dthOperators.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+this.classList.add('border-primary', 'bg-primary/5');
+selectedDthOperator = this.querySelector('span').textContent;
+});
+});
+dthPlanOptions.forEach(plan => {
+plan.addEventListener('click', function() {
+dthPlanOptions.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+this.classList.add('border-primary', 'bg-primary/5');
+selectedDthPlan = this.querySelector('.font-medium').textContent;
+});
+});
+fetchDthPlansBtn.addEventListener('click', function() {
+const subscriberId = document.getElementById('subscriberId').value;
+if (selectedDthOperator && subscriberId) {
+fetchDthPlansBtn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div><span>Fetching...</span>';
+setTimeout(() => {
+dthPlans.classList.remove('hidden');
+fetchDthPlansBtn.innerHTML = '<span>View Plans</span>';
+}, 1500);
+}
+});
+rechargeDthBtn.addEventListener('click', async function() {
+if (selectedDthPlan) {
+dthModal.classList.add('hidden');
+const amount = parseInt(selectedDthPlan.replace('₹', ''));
+await processPayment(amount, 'DTH Recharge');
+}
+});
+// Splash Screen
+setTimeout(function() {
+document.getElementById('splashScreen').classList.add('fade-out');
+setTimeout(function() {
+document.getElementById('splashScreen').style.display = 'none';
+document.getElementById('loginScreen').classList.remove('hidden');
+}, 500);
+}, 2000);
+// Login Flow
+const phoneInput = document.getElementById('phone');
+const phoneError = document.getElementById('phoneError');
+const sendOtpBtn = document.getElementById('sendOtpBtn');
+const phoneInputSection = document.getElementById('phoneInputSection');
+const otpInputSection = document.getElementById('otpInputSection');
+const displayPhone = document.getElementById('displayPhone');
+const otpInputs = [
+document.getElementById('otp1'),
+document.getElementById('otp2'),
+document.getElementById('otp3'),
+document.getElementById('otp4'),
+document.getElementById('otp5'),
+document.getElementById('otp6')
+];
+const otpError = document.getElementById('otpError');
+const verifyOtpBtn = document.getElementById('verifyOtpBtn');
+const resendOtpBtn = document.getElementById('resendOtpBtn');
+const otpTimer = document.getElementById('otpTimer');
+sendOtpBtn.addEventListener('click', function() {
+const phone = phoneInput.value.trim();
+if (phone.length !== 10 || !/^\d+$/.test(phone)) {
+phoneError.classList.remove('hidden');
+return;
+}
+phoneError.classList.add('hidden');
+sendOtpBtn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div><span>Sending...</span>';
+setTimeout(function() {
+phoneInputSection.classList.add('hidden');
+otpInputSection.classList.remove('hidden');
+displayPhone.textContent = phone;
+otpInputs[0].focus();
+startOtpTimer();
+}, 1500);
+});
+otpInputs.forEach((input, index) => {
+input.addEventListener('input', function() {
+if (this.value.length === 1) {
+if (index < otpInputs.length - 1) {
+otpInputs[index + 1].focus();
+}
+}
+});
+input.addEventListener('keydown', function(e) {
+if (e.key === 'Backspace' && this.value.length === 0 && index > 0) {
+otpInputs[index - 1].focus();
+}
+});
+});
+verifyOtpBtn.addEventListener('click', function() {
+const otp = otpInputs.map(input => input.value).join('');
+if (otp.length !== 6 || !/^\d+$/.test(otp)) {
+otpError.classList.remove('hidden');
+return;
+}
+otpError.classList.add('hidden');
+verifyOtpBtn.innerHTML = '<div class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full mr-2"></div><span>Verifying...</span>';
+setTimeout(function() {
+document.getElementById('loginScreen').classList.add('hidden');
+document.getElementById('dashboardScreen').classList.remove('hidden');
+}, 1500);
+});
+function startOtpTimer() {
+let seconds = 120;
+const timerInterval = setInterval(function() {
+seconds--;
+const mins = Math.floor(seconds / 60);
+const secs = seconds % 60;
+otpTimer.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+if (seconds <= 0) {
+clearInterval(timerInterval);
+resendOtpBtn.classList.remove('text-gray-400');
+resendOtpBtn.classList.add('text-primary');
+}
+}, 1000);
+}
+resendOtpBtn.addEventListener('click', function() {
+otpInputs.forEach(input => input.value = '');
+otpInputs[0].focus();
+startOtpTimer();
+});
+});
+document.addEventListener('DOMContentLoaded', function() {
+// PhonePe Integration Simulation
+function simulatePhonePePayment(amount, purpose) {
+return new Promise((resolve) => {
+const randomSuccess = Math.random() > 0.1; // 90% success rate
+setTimeout(() => {
+if (randomSuccess) {
+resolve({
+success: true,
+transactionId: 'PP' + Date.now(),
+utr: Math.random().toString(36).substring(2, 15).toUpperCase(),
+message: 'Payment successful via PhonePe'
+});
+} else {
+resolve({
+success: false,
+message: 'Payment failed. Please try again.'
+});
+}
+}, 2000);
+});
+}
+// Enhanced Payment Processing
+async function processPayment(amount, purpose) {
+const loadingModal = document.createElement('div');
+loadingModal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+loadingModal.innerHTML = `
+<div class="bg-white rounded-lg p-6 text-center">
+<div class="w-16 h-16 border-4 border-secondary border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+<p class="text-gray-600">Processing payment via PhonePe...</p>
+</div>
+`;
+document.body.appendChild(loadingModal);
+try {
+const result = await simulatePhonePePayment(amount, purpose);
+loadingModal.remove();
+if (result.success) {
+showSuccessModal(
+'Payment Successful!',
+'Your payment has been processed successfully via PhonePe.',
+'₹' + amount,
+result.transactionId,
+result.utr
+);
+} else {
+// Show error modal
+const errorModal = document.createElement('div');
+errorModal.className = 'fixed inset-0 bg-black/50 flex items-center justify-center z-50';
+errorModal.innerHTML = `
+<div class="bg-white rounded-lg p-6 text-center">
+<div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+<i class="ri-close-line text-red-600 ri-2x"></i>
+</div>
+<h3 class="text-lg font-medium text-gray-800 mb-2">Payment Failed</h3>
+<p class="text-gray-600 mb-4">${result.message}</p>
+<button class="bg-primary text-white py-2 px-4 rounded-button" onclick="this.parentElement.parentElement.remove()">Try Again</button>
+</div>
+`;
+document.body.appendChild(errorModal);
+}
+} catch (error) {
+loadingModal.remove();
+console.error('Payment processing error:', error);
+}
+}
+// Mobile Recharge Modal
+const mobileRechargeBtn = document.getElementById('mobileRechargeBtn');
+const mobileRechargeModal = document.getElementById('mobileRechargeModal');
+const closeMobileRechargeBtn = document.getElementById('closeMobileRechargeBtn');
+const mobileNumber = document.getElementById('mobileNumber');
+const rechargePlans = document.getElementById('rechargePlans');
+const rechargeConfirm = document.getElementById('rechargeConfirm');
+const proceedRechargeBtn = document.getElementById('proceedRechargeBtn');
+const confirmRechargeBtn = document.getElementById('confirmRechargeBtn');
+const confirmMobileNumber = document.getElementById('confirmMobileNumber');
+const confirmOperator = document.getElementById('confirmOperator');
+const confirmPlan = document.getElementById('confirmPlan');
+const confirmAmount = document.getElementById('confirmAmount');
+const operatorOptions = document.querySelectorAll('.operator-option');
+const planOptions = document.querySelectorAll('.plan-option');
+let selectedOperator = '';
+let selectedPlan = '';
+mobileRechargeBtn.addEventListener('click', function() {
+mobileRechargeModal.classList.remove('hidden');
+});
+closeMobileRechargeBtn.addEventListener('click', function() {
+mobileRechargeModal.classList.add('hidden');
+resetRechargeForm();
+});
+operatorOptions.forEach(option => {
+option.addEventListener('click', function() {
+operatorOptions.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+this.classList.add('border-primary', 'bg-primary/5');
+selectedOperator = this.querySelector('span').textContent;
+});
+});
+planOptions.forEach(option => {
+option.addEventListener('click', function() {
+planOptions.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+this.classList.add('border-primary', 'bg-primary/5');
+selectedPlan = this.querySelector('.font-medium').textContent;
+});
+});
+proceedRechargeBtn.addEventListener('click', function() {
+if (rechargeConfirm.classList.contains('hidden')) {
+if (mobileNumber.value.length === 10 && selectedOperator) {
+rechargePlans.classList.remove('hidden');
+proceedRechargeBtn.textContent = 'Continue';
+}
+} else {
+// Show success modal
+mobileRechargeModal.classList.add('hidden');
+showSuccessModal('Recharge Successful!', 'Your mobile recharge has been completed successfully.', selectedPlan, 'FP' + new Date().getTime().toString().substring(0, 10));
+}
+});
+confirmRechargeBtn.addEventListener('click', function() {
+mobileRechargeModal.classList.add('hidden');
+showSuccessModal('Recharge Successful!', 'Your mobile recharge has been completed successfully.', selectedPlan, 'FP' + new Date().getTime().toString().substring(0, 10));
+});
+function resetRechargeForm() {
+mobileNumber.value = '';
+rechargePlans.classList.add('hidden');
+rechargeConfirm.classList.add('hidden');
+proceedRechargeBtn.classList.remove('hidden');
+confirmRechargeBtn.classList.add('hidden');
+proceedRechargeBtn.textContent = 'Proceed';
+operatorOptions.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+planOptions.forEach(opt => opt.classList.remove('border-primary', 'bg-primary/5'));
+selectedOperator = '';
+selectedPlan = '';
+}
+// AEPS Modal
+const aepsBtn = document.getElementById('aepsBtn');
+const aepsModal = document.getElementById('aepsModal');
+const closeAepsBtn = document.getElementById('closeAepsBtn');
+const aadhaarNumber = document.getElementById('aadhaarNumber');
+const bankSelect = document.getElementById('bankSelect');
+const aepsAmount = document.getElementById('aepsAmount');
+const scanFingerprintBtn = document.getElementById('scanFingerprintBtn');
+const proceedAepsBtn = document.getElementById('proceedAepsBtn');
+const serviceOptions = document.querySelectorAll('.service-option');
+aepsBtn.addEventListener('click', function() {
+aepsModal.classList.remove('hidden');
+});
+closeAepsBtn.addEventListener('click', function() {
+aepsModal.classList.add('hidden');
+});
+serviceOptions.forEach(option => {
+option.addEventListener('click', function() {
+serviceOptions.forEach(opt => {
+opt.classList.remove('border-primary', 'bg-primary/5');
+opt.querySelector('div').classList.remove('bg-primary/20');
+opt.querySelector('div').classList.add('bg-gray-100');
+opt.querySelector('i').classList.remove('text-primary');
+opt.querySelector('i').classList.add('text-gray-600');
+});
+this.classList.add('border-primary', 'bg-primary/5');
+this.querySelector('div').classList.remove('bg-gray-100');
+this.querySelector('div').classList.add('bg-primary/20');
+this.querySelector('i').classList.remove('text-gray-600');
+this.querySelector('i').classList.add('text-primary');
+});
+});
+scanFingerprintBtn.addEventListener('click', function() {
+this.innerHTML = '<div class="animate-spin h-4 w-4 border-2 border-primary border-t-transparent rounded-full mr-2"></div><span>Scanning...</span>';
+setTimeout(() => {
+this.innerHTML = '<i class="ri-check-line mr-1"></i> Scan Complete';
+this.classList.remove('bg-primary/10', 'text-primary');
+this.classList.add('bg-green-100', 'text-green-700');
+}, 2000);
+});
+proceedAepsBtn.addEventListener('click', function() {
+if (aadhaarNumber.value.length === 12 && bankSelect.value && aepsAmount.value) {
+aepsModal.classList.add('hidden');
+showSuccessModal('AEPS Transaction Successful!', 'Your AEPS transaction has been completed successfully.', '₹' + aepsAmount.value, 'FP' + new Date().getTime().toString().substring(0, 10));
+}
+});
+// Loan Modal
+const getLoanBtn = document.getElementById('getLoanBtn');
+const loanModal = document.getElementById('loanModal');
+const closeLoanBtn = document.getElementById('closeLoanBtn');
+const loanAmount = document.getElementById('loanAmount');
+const loanAmountSlider = document.getElementById('loanAmountSlider');
+const applyLoanBtn = document.getElementById('applyLoanBtn');
+getLoanBtn.addEventListener('click', function() {
+loanModal.classList.remove('hidden');
+});
+closeLoanBtn.addEventListener('click', function() {
+loanModal.classList.add('hidden');
+});
+loanAmountSlider.addEventListener('input', function() {
+loanAmount.value = this.value;
+});
+loanAmount.addEventListener('input', function() {
+loanAmountSlider.value = this.value;
+});
+applyLoanBtn.addEventListener('click', function() {
+loanModal.classList.add('hidden');
+showSuccessModal('Loan Application Submitted!', 'Your loan application has been submitted successfully. We will process your application and get back to you soon.', '₹' + loanAmount.value, 'LA' + new Date().getTime().toString().substring(0, 10));
+});
+// QR Scanner Modal
+const scanQrBtn = document.getElementById('scanQrBtn');
+const qrScannerModal = document.getElementById('qrScannerModal');
+const closeQrScannerBtn = document.getElementById('closeQrScannerBtn');
+const enterUpiIdBtn = document.getElementById('enterUpiIdBtn');
+scanQrBtn.addEventListener('click', function() {
+qrScannerModal.classList.remove('hidden');
+// Simulate QR scan after 3 seconds
+setTimeout(() => {
+qrScannerModal.classList.add('hidden');
+showUpiPaymentModal('Coffee Shop', 'coffeeshop@upi');
+}, 3000);
+});
+closeQrScannerBtn.addEventListener('click', function() {
+qrScannerModal.classList.add('hidden');
+});
+enterUpiIdBtn.addEventListener('click', function() {
+qrScannerModal.classList.add('hidden');
+showUpiPaymentModal('Enter Manually', '');
+});
+// UPI Payment Modal
+const upiPaymentModal = document.getElementById('upiPaymentModal');
+const closeUpiPaymentBtn = document.getElementById('closeUpiPaymentBtn');
+const upiPayeeName = document.getElementById('upiPayeeName');
+const upiPayeeId = document.getElementById('upiPayeeId');
+const upiAmount = document.getElementById('upiAmount');
+const payUpiBtn = document.getElementById('payUpiBtn');
+function showUpiPaymentModal(name, id) {
+upiPayeeName.textContent = name;
+upiPayeeId.textContent = id || 'Enter UPI ID';
+upiPaymentModal.classList.remove('hidden');
+}
+closeUpiPaymentBtn.addEventListener('click', function() {
+upiPaymentModal.classList.add('hidden');
+});
+payUpiBtn.addEventListener('click', async function() {
+if (upiAmount.value) {
+upiPaymentModal.classList.add('hidden');
+await processPayment(upiAmount.value, 'UPI Payment');
+}
+});
+// Send Money Modal
+const sendMoneyBtn = document.getElementById('sendMoneyBtn');
+const sendMoneyModal = document.getElementById('sendMoneyModal');
+const closeSendMoneyBtn = document.getElementById('closeSendMoneyBtn');
+const upiTransferBtn = document.getElementById('upiTransferBtn');
+const bankTransferBtn = document.getElementById('bankTransferBtn');
+const upiTransferSection = document.getElementById('upiTransferSection');
+const bankTransferSection = document.getElementById('bankTransferSection');
+const upiId = document.getElementById('upiId');
+const accountNumber = document.getElementById('accountNumber');
+const ifscCode = document.getElementById('ifscCode');
+const accountHolderName = document.getElementById('accountHolderName');
+const transferAmount = document.getElementById('transferAmount');
+const sendMoneyProceedBtn = document.getElementById('sendMoneyProceedBtn');
+sendMoneyBtn.addEventListener('click', function() {
+sendMoneyModal.classList.remove('hidden');
+});
+closeSendMoneyBtn.addEventListener('click', function() {
+sendMoneyModal.classList.add('hidden');
+});
+upiTransferBtn.addEventListener('click', function() {
+upiTransferBtn.classList.add('bg-primary', 'text-white');
+upiTransferBtn.classList.remove('text-gray-700');
+bankTransferBtn.classList.remove('bg-primary', 'text-white');
+bankTransferBtn.classList.add('text-gray-700');
+upiTransferSection.classList.remove('hidden');
+bankTransferSection.classList.add('hidden');
+});
+bankTransferBtn.addEventListener('click', function() {
+bankTransferBtn.classList.add('bg-primary', 'text-white');
+bankTransferBtn.classList.remove('text-gray-700');
+upiTransferBtn.classList.remove('bg-primary', 'text-white');
+upiTransferBtn.classList.add('text-gray-700');
+bankTransferSection.classList.remove('hidden');
+upiTransferSection.classList.add('hidden');
+});
+sendMoneyProceedBtn.addEventListener('click', function() {
+if (transferAmount.value) {
+let recipient = '';
+if (upiTransferSection.classList.contains('hidden')) {
+// Bank transfer
+if (accountNumber.value && ifscCode.value && accountHolderName.value) {
+recipient = accountHolderName.value;
+} else {
+return;
+}
+} else {
+// UPI transfer
+if (upiId.value) {
+recipient = upiId.value;
+} else {
+return;
+}
+}
+sendMoneyModal.classList.add('hidden');
+showSuccessModal('Money Sent Successfully!', `You have successfully sent money to ${recipient}.`, '₹' + transferAmount.value, 'TR' + new Date().getTime().toString().substring(0, 10), '987654321098');
+}
+});
+// Success Modal
+const successModal = document.getElementById('successModal');
+const closeSuccessBtn = document.getElementById('closeSuccessBtn');
+const successTitle = document.getElementById('successTitle');
+const successMessage = document.getElementById('successMessage');
+const successAmount = document.getElementById('successAmount');
+const successDateTime = document.getElementById('successDateTime');
+const successTxnId = document.getElementById('successTxnId');
+const successUtrContainer = document.getElementById('successUtrContainer');
+const successUtr = document.getElementById('successUtr');
+function showSuccessModal(title, message, amount, txnId, utr) {
+successTitle.textContent = title;
+successMessage.textContent = message;
+successAmount.textContent = amount;
+const now = new Date();
+const dateTimeStr = now.toLocaleDateString('en-IN', {
+day: '2-digit',
+month: 'short',
+year: 'numeric'
+}) + ', ' + now.toLocaleTimeString('en-IN', {
+hour: '2-digit',
+minute: '2-digit',
+hour12: true
+});
+successDateTime.textContent = dateTimeStr;
+successTxnId.textContent = txnId;
+if (utr) {
+successUtrContainer.classList.remove('hidden');
+successUtr.textContent = utr;
+} else {
+successUtrContainer.classList.add('hidden');
+}
+successModal.classList.remove('hidden');
+}
+closeSuccessBtn.addEventListener('click', function() {
+successModal.classList.add('hidden');
+});
+});
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+function generatePDF(transactionData) {
+const { jsPDF } = window.jspdf;
+const doc = new jsPDF('p', 'mm', [210, 297]);
+
+// Add logo and header
+doc.addImage("https://static.readdy.ai/image/f5b64d3ed3656f34b58a66c19a30066a/d004f03dffdff673ba26fd3d8cb8c799.png", "PNG", 75, 10, 60, 20);
+
+// Add decorative line
+doc.setDrawColor(95, 37, 159);
+doc.setLineWidth(0.5);
+doc.line(20, 35, 190, 35);
+
+// Add receipt title
+doc.setFontSize(22);
+doc.setTextColor(95, 37, 159);
+doc.text("Payment Receipt", 105, 45, { align: "center" });
+
+// Add transaction status
+doc.setFillColor(39, 174, 96);
+doc.roundedRect(145, 50, 45, 10, 2, 2, 'F');
+doc.setTextColor(255, 255, 255);
+doc.setFontSize(12);
+doc.text("SUCCESSFUL", 167.5, 56.5, { align: "center" });
+
+// Add merchant details if available
+if (transactionData.merchantName) {
+    doc.setTextColor(51, 51, 51);
+    doc.setFontSize(14);
+    doc.text("Merchant Details", 20, 70);
+    doc.setFontSize(10);
+    doc.text(transactionData.merchantName, 20, 78);
+    doc.text(transactionData.merchantId || "", 20, 84);
+    y = 100;
+} else {
+    y = 80;
+}
+
+// Add transaction details
+doc.setTextColor(51, 51, 51);
+doc.setFontSize(14);
+doc.text("Transaction Details", 20, y);
+doc.setFontSize(10);
+
+const details = [
+    ["Date & Time", transactionData.dateTime],
+    ["Transaction ID", transactionData.txnId],
+    ["Reference Number", transactionData.utr || "N/A"],
+    ["Payment Type", transactionData.type],
+    ["Payment Mode", "PhonePe UPI"],
+    ["Amount", transactionData.amount],
+    ["Status", "Success"],
+];
+
+y += 10;
+details.forEach(([key, value]) => {
+    doc.setTextColor(128, 128, 128);
+    doc.text(key, 20, y);
+    doc.setTextColor(51, 51, 51);
+    doc.text(value, 80, y);
+    y += 8;
+});
+
+// Add customer details
+doc.setTextColor(51, 51, 51);
+doc.setFontSize(14);
+y += 10;
+doc.text("Customer Details", 20, y);
+doc.setFontSize(10);
+y += 10;
+
+const customerDetails = [
+    ["Name", "Aditya Sharma"],
+    ["Mobile", "+91 98765 43210"],
+    ["Email", "aditya.sharma@email.com"]
+];
+
+customerDetails.forEach(([key, value]) => {
+    doc.setTextColor(128, 128, 128);
+    doc.text(key, 20, y);
+    doc.setTextColor(51, 51, 51);
+    doc.text(value, 80, y);
+    y += 8;
+});
+
+// Add bottom decorative line
+doc.setDrawColor(95, 37, 159);
+doc.setLineWidth(0.5);
+doc.line(20, 260, 190, 260);
+
+// Add footer
+doc.setFontSize(8);
+doc.setTextColor(128, 128, 128);
+doc.text("This is a computer generated receipt and does not require physical signature.", 105, 270, { align: "center" });
+doc.text("For any queries, please contact our customer support at support@frenzopay.com", 105, 275, { align: "center" });
+doc.text("Thank you for using FrenzoPay!", 105, 280, { align: "center" });
+
+// Save PDF
+doc.save(`FrenzoPay_Receipt_${transactionData.txnId}.pdf`);
+}
+// Update success modal download button
+document.querySelector('#successModal button:nth-child(1)').addEventListener('click', function() {
+    const title = document.getElementById('successTitle').textContent;
+    let type = 'Money Transfer';
+    let merchantName = '';
+    let merchantId = '';
+
+    if (title.includes('Recharge')) {
+        type = 'Mobile Recharge';
+        merchantName = document.getElementById('confirmOperator')?.textContent || 'Jio';
+        merchantId = 'TELE' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    } else if (title.includes('Bill')) {
+        type = 'Bill Payment';
+        merchantName = document.getElementById('electricityProvider')?.value || 'BSES Rajdhani';
+        merchantId = 'UTIL' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    } else if (title.includes('DTH')) {
+        type = 'DTH Recharge';
+        merchantName = document.getElementById('dthOperator')?.textContent || 'Tata Play';
+        merchantId = 'DTH' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    } else if (title.includes('AEPS')) {
+        type = 'AEPS Transaction';
+        merchantName = document.getElementById('bankSelect')?.value || 'State Bank of India';
+        merchantId = 'AEPS' + Math.random().toString(36).substring(2, 8).toUpperCase();
+    }
+
+    const transactionData = {
+        dateTime: document.getElementById('successDateTime').textContent,
+        txnId: document.getElementById('successTxnId').textContent,
+        amount: document.getElementById('successAmount').textContent,
+        type: type,
+        utr: document.getElementById('successUtr')?.textContent || Math.random().toString(36).substring(2, 15).toUpperCase(),
+        merchantName: merchantName,
+        merchantId: merchantId
+    };
+    
+    generatePDF(transactionData);
+});
+</script>
+</body>
+</html>
