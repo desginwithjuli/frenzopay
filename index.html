@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MS CRM Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">MS CRM</span>
+                    <span class="logo-year">2025</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" id="pageTitle">Dashboard</h1>
+        </div>
+        
+        <div class="header-center">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search..." class="search-input">
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-dot"></span>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user user-icon"></i>
+                <span class="user-text">Hi, testing</span>
+                <span class="user-details">HL SECUNDERABAD | 07/07/2025 17:12:01</span>
+            </div>
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item active">
+                        <a href="index.html" class="nav-link" data-page="Dashboard">
+                            <div class="nav-icon dashboard-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" id="masterToggle" data-page="Master">
+                            <div class="nav-icon master-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <span class="nav-text">Master</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu" id="masterSubmenu">
+                            <li class="submenu-item">
+                                <a href="customer-master.html" class="submenu-link">
+                                    <i class="fas fa-users"></i>
+                                    <span>Customer Master</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link">
+                                    <i class="fas fa-industry"></i>
+                                    <span>Production Unit Master</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" id="saleOrderToggle" data-page="Sale Order Mgmt">
+                            <div class="nav-icon sale-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <span class="nav-text">Sale Order Mgmt</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu" id="saleOrderSubmenu">
+                            <li class="submenu-item">
+                                <a href="create-order.html" class="submenu-link">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Create Order</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link">
+                                    <i class="fas fa-search"></i>
+                                    <span>Track Order</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Processing">
+                            <div class="nav-icon processing-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <span class="nav-text">Processing</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Organiser">
+                            <div class="nav-icon organiser-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <span class="nav-text">Organiser</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Billing & Return">
+                            <div class="nav-icon billing-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <span class="nav-text">Billing & Return</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Collection & Credit">
+                            <div class="nav-icon collection-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <span class="nav-text">Collection & Credit</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Reports">
+                            <div class="nav-icon reports-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <span class="nav-text">Reports</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="E-Invoice">
+                            <div class="nav-icon invoice-icon">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <span class="nav-text">E-Invoice</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Services">
+                            <div class="nav-icon services-icon">
+                                <i class="fas fa-concierge-bell"></i>
+                            </div>
+                            <span class="nav-text">Services</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="content-area">
+                <div class="dashboard-content">
+                    <div class="dashboard-header">
+                        <h2>Dashboard Overview</h2>
+                        <div class="date-info">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Today: 07/07/2025</span>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-stats">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-users"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Total Customers</h3>
+                                <p class="stat-number">1,234</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Sale Orders</h3>
+                                <p class="stat-number">567</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Invoices</h3>
+                                <p class="stat-number">890</p>
+                            </div>
+                        </div>
+                        
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <div class="stat-info">
+                                <h3>Revenue</h3>
+                                <p class="stat-number">₹12.5L</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-welcome">
+                        <p>Welcome back! Here's what's happening with your business today.</p>
+                        <div class="quick-actions">
+                            <button class="quick-action-btn">
+                                <i class="fas fa-plus"></i>
+                                New Customer
+                            </button>
+                            <button class="quick-action-btn">
+                                <i class="fas fa-shopping-cart"></i>
+                                New Order
+                            </button>
+                            <button class="quick-action-btn">
+                                <i class="fas fa-file-invoice"></i>
+                                Generate Invoice
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

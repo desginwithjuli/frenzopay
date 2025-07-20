@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Master - MS CRM</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-left">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <div class="logo-text">
+                    <span class="logo-title">MS CRM</span>
+                    <span class="logo-year">2025</span>
+                </div>
+            </div>
+            <button class="sidebar-toggle" id="sidebarToggle">
+                <i class="fas fa-bars"></i>
+            </button>
+            <h1 class="page-title" id="pageTitle">Customer Master</h1>
+        </div>
+        
+        <div class="header-center">
+            <div class="search-container">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" placeholder="Search..." class="search-input">
+            </div>
+        </div>
+        
+        <div class="header-right">
+            <div class="notification">
+                <i class="fas fa-bell"></i>
+                <span class="notification-dot"></span>
+            </div>
+            <div class="user-info">
+                <i class="fas fa-user user-icon"></i>
+                <span class="user-text">Hi, testing</span>
+                <span class="user-details">HL SECUNDERABAD | 07/07/2025 17:12:01</span>
+            </div>
+            <button class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Logout</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="index.html" class="nav-link" data-page="Dashboard">
+                            <div class="nav-icon dashboard-icon">
+                                <i class="fas fa-tachometer-alt"></i>
+                            </div>
+                            <span class="nav-text">Dashboard</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item has-submenu active">
+                        <a href="#" class="nav-link" id="masterToggle" data-page="Master">
+                            <div class="nav-icon master-icon">
+                                <i class="fas fa-database"></i>
+                            </div>
+                            <span class="nav-text">Master</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu open" id="masterSubmenu">
+                            <li class="submenu-item">
+                                <a href="customer-master.html" class="submenu-link active">
+                                    <i class="fas fa-users"></i>
+                                    <span>Customer Master</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link">
+                                    <i class="fas fa-industry"></i>
+                                    <span>Production Unit Master</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item has-submenu">
+                        <a href="#" class="nav-link" id="saleOrderToggle" data-page="Sale Order Mgmt">
+                            <div class="nav-icon sale-icon">
+                                <i class="fas fa-shopping-cart"></i>
+                            </div>
+                            <span class="nav-text">Sale Order Mgmt</span>
+                            <i class="fas fa-chevron-down submenu-arrow"></i>
+                        </a>
+                        <ul class="submenu" id="saleOrderSubmenu">
+                            <li class="submenu-item">
+                                <a href="create-order.html" class="submenu-link">
+                                    <i class="fas fa-plus-circle"></i>
+                                    <span>Create Order</span>
+                                </a>
+                            </li>
+                            <li class="submenu-item">
+                                <a href="#" class="submenu-link">
+                                    <i class="fas fa-search"></i>
+                                    <span>Track Order</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Processing">
+                            <div class="nav-icon processing-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <span class="nav-text">Processing</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Organiser">
+                            <div class="nav-icon organiser-icon">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <span class="nav-text">Organiser</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Billing & Return">
+                            <div class="nav-icon billing-icon">
+                                <i class="fas fa-file-invoice"></i>
+                            </div>
+                            <span class="nav-text">Billing & Return</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Collection & Credit">
+                            <div class="nav-icon collection-icon">
+                                <i class="fas fa-coins"></i>
+                            </div>
+                            <span class="nav-text">Collection & Credit</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Reports">
+                            <div class="nav-icon reports-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <span class="nav-text">Reports</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="E-Invoice">
+                            <div class="nav-icon invoice-icon">
+                                <i class="fas fa-receipt"></i>
+                            </div>
+                            <span class="nav-text">E-Invoice</span>
+                        </a>
+                    </li>
+                    
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-page="Services">
+                            <div class="nav-icon services-icon">
+                                <i class="fas fa-concierge-bell"></i>
+                            </div>
+                            <span class="nav-text">Services</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content" id="mainContent">
+            <div class="content-area">
+                <!-- Action Buttons -->
+                <div class="form-actions">
+                    <div class="form-actions-left">
+                        <button class="btn btn-success">
+                            <i class="fas fa-plus"></i>
+                            New
+                        </button>
+                        <button class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            Save
+                        </button>
+                    </div>
+                    <div class="form-actions-right">
+                        <span class="record-info">Id</span>
+                        <button class="btn btn-nav">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="btn btn-nav">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <span class="record-info">|&gt;</span>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-copy"></i>
+                            Copy Sales Order
+                        </button>
+                        <button class="btn btn-secondary">
+                            <i class="fas fa-print"></i>
+                            Print Order Sheet
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Form Header -->
+                <div class="form-header">
+                    <div class="form-header-content">
+                        <i class="fas fa-shopping-cart form-header-icon"></i>
+                        <h2 class="form-title">Customer Master</h2>
+                        <div class="form-header-actions">
+                            <button class="btn btn-outline">
+                                <i class="fas fa-cog"></i>
+                                Advanced
+                            </button>
+                            <button class="btn btn-warning">
+                                <i class="fas fa-edit"></i>
+                                Editing Mode
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Customer Master Form -->
+                <div class="form-container">
+                    <form class="customer-form">
+                        <!-- Row 1 -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-building text-success"></i>
+                                    Center Name *
+                                </label>
+                                <select class="form-select">
+                                    <option value="">Select Center</option>
+                                    <option value="CT_SEC" selected>CT SECUNDERABAD</option>
+                                    <option value="CT_HYD">CT HYDERABAD</option>
+                                    <option value="CT_BLR">CT BANGALORE</option>
+                                    <option value="CT_CHN">CT CHENNAI</option>
+                                    <option value="CT_MUM">CT MUMBAI</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-map-marker-alt text-danger"></i>
+                                    Branch Name *
+                                </label>
+                                <select class="form-select">
+                                    <option value="">Select Branch</option>
+                                    <option value="BR_SEC" selected>CT SECUNDERABAD</option>
+                                    <option value="BR_HYD">CT HYDERABAD MAIN</option>
+                                    <option value="BR_KUR">CT KUKATPALLY</option>
+                                    <option value="BR_LBN">CT LB NAGAR</option>
+                                    <option value="BR_MDH">CT MADHAPUR</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-calendar text-purple"></i>
+                                    Season *
+                                </label>
+                                <select class="form-select">
+                                    <option value="" selected>---Select Season---</option>
+                                    <option value="KHARIF_2025">Kharif 2025</option>
+                                    <option value="RABI_2025">Rabi 2025-26</option>
+                                    <option value="SUMMER_2025">Summer 2025</option>
+                                    <option value="KHARIF_2024">Kharif 2024</option>
+                                    <option value="RABI_2024">Rabi 2024-25</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">CNF Name</label>
+                                <select class="form-select">
+                                    <option value="" selected>--- Select CNF Name ---</option>
+                                    <option value="CNF_001">ABC Distributors Pvt Ltd</option>
+                                    <option value="CNF_002">XYZ Trading Company</option>
+                                    <option value="CNF_003">PQR Agro Solutions</option>
+                                    <option value="CNF_004">LMN Fertilizers Ltd</option>
+                                    <option value="CNF_005">RST Agricultural Supplies</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 2 -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">
+                                    <i class="fas fa-file-alt text-primary"></i>
+                                    Sale Order No.
+                                </label>
+                                <div class="input-with-badge">
+                                    <input type="text" class="form-input" value="SO-2025-001248" readonly>
+                                    <span class="input-badge">AUTO</span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-calendar-alt text-success"></i>
+                                    Sale Order Date *
+                                </label>
+                                <input type="date" class="form-input" value="2025-07-08">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-truck text-orange"></i>
+                                    Shipment Mode *
+                                </label>
+                                <select class="form-select">
+                                    <option value="">Select Mode</option>
+                                    <option value="BY_ROAD" selected>BY ROAD</option>
+                                    <option value="BY_RAIL">BY RAIL</option>
+                                    <option value="BY_AIR">BY AIR</option>
+                                    <option value="BY_SEA">BY SEA</option>
+                                    <option value="COURIER">COURIER</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">Delivery Terms *</label>
+                                <select class="form-select">
+                                    <option value="" selected>Select delivery terms</option>
+                                    <option value="FOB">FOB (Free on Board)</option>
+                                    <option value="CIF">CIF (Cost, Insurance & Freight)</option>
+                                    <option value="CFR">CFR (Cost and Freight)</option>
+                                    <option value="EXW">EXW (Ex Works)</option>
+                                    <option value="DDP">DDP (Delivered Duty Paid)</option>
+                                    <option value="DAP">DAP (Delivered at Place)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- Row 3 -->
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-money-bill text-purple"></i>
+                                    Currency *
+                                </label>
+                                <select class="form-select">
+                                    <option value="">Select Currency</option>
+                                    <option value="INR" selected>INR - Indian Rupee</option>
+                                    <option value="USD">USD - US Dollar</option>
+                                    <option value="EUR">EUR - Euro</option>
+                                    <option value="GBP">GBP - British Pound</option>
+                                    <option value="JPY">JPY - Japanese Yen</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-user text-primary"></i>
+                                    Billing Party *
+                                </label>
+                                <select class="form-select">
+                                    <option value="" selected>----- Select Billing Party -----</option>
+                                    <option value="BP_001">Rajesh Kumar Enterprises</option>
+                                    <option value="BP_002">Suresh Agro Industries</option>
+                                    <option value="BP_003">Mahesh Trading Co.</option>
+                                    <option value="BP_004">Ramesh Fertilizers Ltd</option>
+                                    <option value="BP_005">Ganesh Agricultural Supplies</option>
+                                    <option value="BP_006">Dinesh Crop Solutions</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label required">
+                                    <i class="fas fa-map-marker-alt text-success"></i>
+                                    Shipment To *
+                                </label>
+                                <select class="form-select">
+                                    <option value="" selected>----- Select Shipment To -----</option>
+                                    <option value="ST_001">Warehouse - Secunderabad</option>
+                                    <option value="ST_002">Warehouse - Hyderabad</option>
+                                    <option value="ST_003">Distribution Center - Kukatpally</option>
+                                    <option value="ST_004">Godown - LB Nagar</option>
+                                    <option value="ST_005">Storage - Madhapur</option>
+                                    <option value="ST_006">Depot - Nizamabad</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">C.O. No.</label>
+                                <input type="text" class="form-input" placeholder="Enter C.O. number">
+                            </div>
+                        </div>
+
+                        <!-- Remarks Section -->
+                        <div class="form-row full-width">
+                            <div class="form-group full-width">
+                                <label class="form-label">Remarks</label>
+                                <textarea class="form-textarea" rows="4" placeholder="Enter any additional remarks or special instructions..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
